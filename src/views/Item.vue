@@ -4,15 +4,7 @@
       <div class="col q-pa-md" style="height: 88vh; overflow-y: scroll;">
         <q-btn @click="exitToHome" icon="arrow_back">Вернуться к списку</q-btn>
         <h3>{{ item.name }}</h3>
-        <div class="text-orange">
-          {{ item.rating }}
-          <q-icon name="star" v-if="item.rating > 0" />
-          <q-icon name="star" v-if="item.rating > 1" />
-          <q-icon name="star" v-if="item.rating > 2" />
-          <q-icon name="star" v-if="item.rating > 3" />
-          <q-icon name="star" v-if="item.rating > 4" />
-        </div>
-
+        <rating :rating="+item.rating"></rating>
         <div class="text-subtitle1">{{ item.location }}</div>
 
         <div class="text-subtitle2">{{ item.category }}</div>
@@ -60,14 +52,7 @@
 
               <q-item-section side top>
                 <q-item-label caption>{{ getDate(review.created_at) }}</q-item-label>
-                <div class="text-orange">
-                  {{ review.rating }}
-                  <q-icon name="star" v-if="review.rating > 0" />
-                  <q-icon name="star" v-if="review.rating > 1" />
-                  <q-icon name="star" v-if="review.rating > 2" />
-                  <q-icon name="star" v-if="review.rating > 3" />
-                  <q-icon name="star" v-if="review.rating > 4" />
-                </div>
+                <rating :rating="+review.rating"></rating>
                 <q-item-label v-if="userId && review.uid === userEmail">
                   <q-btn icon="delete" size="xs" @click="delRev(review.id)"></q-btn>
                 </q-item-label>
@@ -104,12 +89,13 @@ import { yandexMap, ymapMarker,} from 'vue-yandex-maps'
 import {getItem, getReviews, saveReview, deleteReview} from '../hooks/db';
 import MD5 from "crypto-js/md5";
 import {selectCity, settings} from "../hooks/ymap";
+import Rating from "../components/Rating";
 import { useQuasar } from 'quasar'
 import moment from "moment";
 
 export default {
   name: 'ItemEdit',
-  components: { yandexMap, ymapMarker },
+  components: { yandexMap, ymapMarker, Rating },
   store,
   setup () {
     const $q = useQuasar();

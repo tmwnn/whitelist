@@ -37,14 +37,7 @@
 
                 <q-item-section side top>
                   <q-item-label caption>{{ getDate(item.created_at) }}</q-item-label>
-                  <div class="text-orange">
-                    {{ item.rating }}
-                    <q-icon name="star" v-if="item.rating > 0" />
-                    <q-icon name="star" v-if="item.rating > 1" />
-                    <q-icon name="star" v-if="item.rating > 2" />
-                    <q-icon name="star" v-if="item.rating > 3" />
-                    <q-icon name="star" v-if="item.rating > 4" />
-                  </div>
+                  <rating :rating="+item.rating"></rating>
                   <q-item-label v-if="userId && item.uid === userEmail">
                     <q-btn icon="edit" size="xs"  @click="$router.replace(`/edit/${item.id}/`)"></q-btn>
                     <q-btn icon="delete" size="xs" @click="delPlace(item.id)"></q-btn>
@@ -98,13 +91,14 @@ import store from '../store/index';
 import { yandexMap, ymapMarker,} from 'vue-yandex-maps'
 import {settings, selectCity, getGeoCode, getGeoLocation} from "../hooks/ymap";
 import {getItems, saveItem, deleteItem} from '../hooks/db';
+import Rating from "../components/Rating";
 import MD5 from "crypto-js/md5";
 import moment from 'moment';
 
 export default {
   name: 'Home',
   store,
-  components: { yandexMap, ymapMarker },
+  components: { yandexMap, ymapMarker, Rating },
   setup() {
     const $q = useQuasar();
 
