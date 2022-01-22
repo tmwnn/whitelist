@@ -1,13 +1,13 @@
-import {collection, deleteDoc, doc, getDocs, getDoc, getFirestore, setDoc} from "firebase/firestore";
+import {collection, deleteDoc, doc, getDocs, getDoc, getFirestore, setDoc, query, where, orderBy} from "firebase/firestore";
 
 const getItems = async () => {
-    let items = await getDocs(collection(getFirestore(), "items"));
+    const items = await getDocs(query(
+        collection(getFirestore(), "items"),
+        orderBy("created_at", "desc")
+    ));
     let result = [];
-    await items.forEach((row) => {
+    items.forEach((row) => {
         result.push(row.data());
-    });
-    result.sort(function(a, b) {
-        return parseInt(b.created_at) - parseInt(a.created_at);
     });
     return result;
 }
@@ -26,16 +26,14 @@ const deleteItem = async (id) => {
 }
 
 const getReviews = async (itemId) => {
-    let reviews = await getDocs(collection(getFirestore(), "reviews"));
     let result = [];
-    await reviews.forEach((item) => {
-        let review = item.data();
-        if (review.item_id == itemId) {
-            result.push(review);
-        }
-    });
-    result.sort(function(a, b) {
-        return parseInt(b.created_at) - parseInt(a.created_at);
+    const reviews = await getDocs(query(
+        collection(getFirestore(), "reviews"),
+        where('item_id','==', itemId),
+        orderBy("created_at", "desc")
+    ));
+    reviews.forEach((item) => {
+        result.push(item.data());
     });
     return result;
 }
@@ -67,7 +65,7 @@ const saveReview = async (review) => {
 }
 
 const deleteReview = async (id) => {
-    let review = getReview(id);
+    let review = await getReview(id);
     await deleteDoc(doc(getFirestore(), "reviews", id));
     await recalcRating(review.item_id);
 }

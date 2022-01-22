@@ -31,8 +31,7 @@
                   <q-item-label><a :href="`/item/${item.id}/`" class="text-weight-bold">{{ item.name }}</a></q-item-label>
                   <q-item-label>{{ item.category }}</q-item-label>
                   <q-item-label caption>{{ item.location }}</q-item-label>
-                  <q-item-label caption :style="'color:green'">{{ item.uid }}</q-item-label>
-                  <q-item-label caption>{{ item.coords }}</q-item-label>
+                  <q-item-label caption :style="'color:green'">Модератор: <a :href="`mailto:${item.uid}`">{{item.uid}}</a></q-item-label>
                 </q-item-section>
 
                 <q-item-section side top>

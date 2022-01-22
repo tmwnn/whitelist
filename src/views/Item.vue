@@ -47,7 +47,7 @@
             <q-item >
               <q-item-section>
                 <q-item-label>{{ review.text }}</q-item-label>
-                <q-item-label caption :style="'color:green'">{{ review.uid }}</q-item-label>
+                <q-item-label caption><a :href="`mailto:${review.uid}`" style="color:green">{{review.uid}}</a></q-item-label>
               </q-item-section>
 
               <q-item-section side top>
@@ -145,14 +145,14 @@ export default {
       newReview.value.created_at = new Date().getTime();
       newReview.value.uid = store.getters.userEmail;
       await saveReview(newReview.value);
-      reviews.value = await getReviews(id.value);
-      item.value = await getItem(id.value);
+      reviews.value = await getReviews(item.value.id);
+      item.value = await getItem(item.value.id);
     }
 
     const delRev = async (reviewId) => {
       await deleteReview(reviewId);
-      reviews.value = await getReviews(id.value);
-      item.value = await getItem(id.value);
+      reviews.value = await getReviews(item.value.id);
+      item.value = await getItem(item.value.id);
     }
 
     const clearRev = () => {
