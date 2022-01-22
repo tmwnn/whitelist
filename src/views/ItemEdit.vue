@@ -24,10 +24,17 @@
               label="Адрес"
           />
 
+          <q-input
+              filled
+              v-model="item.description"
+              type="textarea"
+              label="Описание"
+          />
+
           <div>
             <q-btn label="Сохранить" type="submit" color="primary"/>
-            <q-btn label="Показать на карте" type="button" @click="locate()" flat сlass="q-ml-sm"/>
             <q-btn label="Отмена" type="reset" color="primary" flat class="q-ml-sm"/>
+            <q-btn label="Показать на карте" type="button" @click="locate()" flat сlass="q-ml-sm"/>
           </div>
         </q-form>
       </div>
@@ -72,6 +79,7 @@ export default {
       id:'',
       category: '',
       name: '',
+      description: '',
       location: selectCity + ', ',
       coords: [],
       uid: '',
@@ -104,12 +112,12 @@ export default {
     const locate = async () => {
       item.value.coords = await getGeoCode(item.value.location);
     }
-
+    /*
     if (!store.getters.userId) {
       $q.notify({message: 'Необходимо авторизоваться!', color: 'red' });
       exitToHome();
     }
-
+    */
     return {
       id,
       item,

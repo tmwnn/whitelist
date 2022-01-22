@@ -38,11 +38,14 @@
                 <q-item-section side top>
                   <q-item-label caption>{{ getDate(item.created_at) }}</q-item-label>
                   <div class="text-orange">
-                    <q-icon name="star" />
-                    <q-icon name="star" />
-                    <q-icon name="star" />
+                    {{ item.rating }}
+                    <q-icon name="star" v-if="item.rating > 0" />
+                    <q-icon name="star" v-if="item.rating > 1" />
+                    <q-icon name="star" v-if="item.rating > 2" />
+                    <q-icon name="star" v-if="item.rating > 3" />
+                    <q-icon name="star" v-if="item.rating > 4" />
                   </div>
-                  <q-item-label v-if="userId">
+                  <q-item-label v-if="userId && item.uid === userEmail">
                     <q-btn icon="edit" size="xs"  @click="$router.replace(`/edit/${item.id}/`)"></q-btn>
                     <q-btn icon="delete" size="xs" @click="delPlace(item.id)"></q-btn>
                   </q-item-label>
@@ -55,7 +58,7 @@
         </div>
         <div class="col">
 
-          <yandex-map :settings="settings"  :coords="coords" style="width: 100%;height: 88vh;" zoom="11">
+          <yandex-map :settings="settings"  :coords="coords" style="width: 100%;height: 88vh;" zoom="11" v-if="coords">
             <ymap-marker
                          :coords="coords"
                          marker-id="my"
@@ -120,13 +123,7 @@ export default {
     let coords = ref([60,30]);
 
     const loadItems = async () => {
-      items.value = [];
-
-      let itemsLoaded = await getItems();
-
-      itemsLoaded.forEach((doc) => {
-          items.value.push({ id: doc.id, ...doc.data() });
-      });
+      items.value = await getItems();
     }
     (async () => {
       await loadItems();
@@ -160,10 +157,6 @@ export default {
       await loadItems();
     }
 
-    const test = async () => {
-      console.log('test');
-    };
-
     const coordsItems = computed(() => {
       let coordsItems = [];
       filtredItems.value.forEach((item) => {
@@ -184,7 +177,6 @@ export default {
       addPlace,
       newPlace,
       delPlace,
-      test,
       settings,
       coords,
       coordsItems,
@@ -198,6 +190,9 @@ export default {
   computed: {
     userId() {
       return this.$store.getters.userId;
+    },
+    userEmail() {
+      return this.$store.getters.userEmail;
     }
   }
 }
