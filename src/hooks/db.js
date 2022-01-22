@@ -56,9 +56,8 @@ const recalcRating = async (itemId) => {
        }
     });
     let avarRating = Math.round(summRatings/cntRatings * 10) / 10;
-    let item = getItem(itemId);
+    let item = await getItem(itemId);
     item.rating = avarRating;
-    //console.log('recalcRating', item, cntRatings, summRatings);
     saveItem(item);
 }
 
