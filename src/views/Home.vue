@@ -112,6 +112,9 @@
                   <q-item-label><a :href="`/item/${item.id}/`" class="text-weight-bold">{{ item.name }}</a></q-item-label>
                   <q-item-label>{{ item.category }}</q-item-label>
                   <q-item-label caption>{{ item.location }}</q-item-label>
+                  <q-item-label caption v-if="item.url">
+                    <a :href="item.url" target="_blank" >{{ item.url }}</a>
+                  </q-item-label>
                   <q-item-label caption :style="'color:green'">Модератор: <a :href="`mailto:${item.uid}`">{{item.uid}}</a></q-item-label>
                 </q-item-section>
 
@@ -169,10 +172,9 @@ import { useQuasar } from 'quasar'
 
 import store from '../store/index';
 import { yandexMap, ymapMarker,} from 'vue-yandex-maps'
-import {settings, selectCity, getGeoCode, getGeoLocation} from "../hooks/ymap";
-import {getItems, saveItem, deleteItem} from '../hooks/db';
+import {settings, selectCity, getGeoLocation} from "../hooks/ymap";
+import {getItems, deleteItem} from '../hooks/db';
 import Rating from "../components/Rating";
-import MD5 from "crypto-js/md5";
 import moment from 'moment';
 
 export default {
@@ -186,15 +188,6 @@ export default {
       defaultView = 1;
     }
     let viewType = ref(defaultView);
-    let newPlace = ref({
-      id:'',
-      category: '',
-      name: '',
-      location: '',
-      coords: [],
-      uid: '',
-      created_at: '',
-    });
     let items = ref([]);
     let filterName = ref('');
     let filterCategory = ref('');
@@ -207,7 +200,6 @@ export default {
     (async () => {
       await loadItems();
       coords.value = await getGeoLocation();
-      newPlace.value.location = `${selectCity}, `;
     })();
 
     const filtredItems = computed(() => {
@@ -223,22 +215,10 @@ export default {
       });
     })
 
-    const addPlace = async () => {
-      if (!store.getters.userId) {
-        $q.notify({message: 'Необходимо авторизоваться!', color: 'red' });
-        return;
-      }
-      newPlace.value.id = MD5(newPlace.value.name + newPlace.value.location).toString();
-      newPlace.value.uid = store.getters.userEmail;
-      newPlace.value.coords = await getGeoCode(newPlace.value.location);
-      newPlace.value.created_at = new Date().getTime();
-      await saveItem(newPlace.value);
-      await loadItems();
-    }
-
     const delPlace = async (placeId) => {
       await deleteItem(placeId);
       await loadItems();
+      $q.notify({message: 'Удаление прошло успешно', color: 'green' });
     }
 
     const coordsItems = computed(() => {
@@ -266,8 +246,6 @@ export default {
 
     return {
       items,
-      addPlace,
-      newPlace,
       delPlace,
       settings,
       coords,

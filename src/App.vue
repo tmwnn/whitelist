@@ -16,7 +16,7 @@
         </q-toolbar-title>
         <q-tabs align="left" shrink>
           <q-route-tab :to="{ name: 'home'}"  label="Список" />
-          <q-route-tab :to="{ name: 'item_add'}"  label="Добавить" />
+          <q-route-tab v-if="userId" :to="{ name: 'item_add'}"  label="Добавить" />
         </q-tabs>
         <div>
           <!--Quasar v{{ $q.version }}-->

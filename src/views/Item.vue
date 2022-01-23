@@ -6,6 +6,9 @@
         <h3>{{ item.name }}</h3>
         <rating :rating="+item.rating"></rating>
         <div class="text-subtitle1">{{ item.location }}</div>
+        <div class="text-subtitle1" v-if="item.url">
+          <a :href="item.url" target="_blank" >{{ item.url }}</a>
+        </div>
 
         <div class="text-subtitle2"><i>Категория: {{ item.category }}</i></div>
         <div class="text-body1">{{ item.description }}</div>
@@ -25,7 +28,7 @@
           />
 
           <div>
-            <span class="q-mr-sm">Выбретите рейтинг:</span>
+            <span class="q-mr-sm">Выберите рейтинг:</span>
             <span class="text-orange">
               <q-icon :name="newReview.rating > 0 ? 'star' : 'star_border'" @click="newReview.rating = 1"/>
               <q-icon :name="newReview.rating > 1 ? 'star' : 'star_border'" @click="newReview.rating = 2"/>
@@ -109,6 +112,7 @@ export default {
       description: '',
       rating: '',
       location: selectCity + ', ',
+      url: '',
       coords: [],
       uid: '',
       created_at: '',
@@ -147,12 +151,14 @@ export default {
       await saveReview(newReview.value);
       reviews.value = await getReviews(item.value.id);
       item.value = await getItem(item.value.id);
+      $q.notify({message: 'Отзыв добавлен', color: 'green' });
     }
 
     const delRev = async (reviewId) => {
       await deleteReview(reviewId);
       reviews.value = await getReviews(item.value.id);
       item.value = await getItem(item.value.id);
+      $q.notify({message: 'Отзыв удален', color: 'green' });
     }
 
     const clearRev = () => {

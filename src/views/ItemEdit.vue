@@ -33,6 +33,12 @@
 
           <q-input
               filled
+              v-model.trim="item.url"
+              label="Сайт"
+          />
+
+          <q-input
+              filled
               v-model="item.description"
               type="textarea"
               label="Описание"
@@ -88,6 +94,7 @@ export default {
       name: '',
       description: '',
       location: selectCity + ', ',
+      url: '',
       coords: [],
       uid: '',
       created_at: '',
@@ -116,6 +123,7 @@ export default {
       item.value.coords = await getGeoCode(item.value.location);
       item.value.uid = store.getters.userEmail;
       await saveItem(item.value);
+      $q.notify({message: 'Изменения сохранены', color: 'green' });
       exitToHome();
     }
     const locate = async () => {
