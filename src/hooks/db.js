@@ -70,4 +70,18 @@ const deleteReview = async (id) => {
     await recalcRating(review.item_id);
 }
 
-export {getItems, getItem, saveItem, deleteItem, getReviews, saveReview, deleteReview}
+const getCategories = async (onlyExitst) => {
+    let categories = [];
+    if (!onlyExitst) {
+        categories = ['Кафе/бар', 'Автосервис', 'Стоматология', 'Ветклиника'];
+    }
+    let items = await getItems();
+    items.forEach((item) => {
+        if (!!item.category && !categories.includes(item.category)) {
+            categories.push(item.category);
+        }
+    });
+    return categories;
+}
+
+export {getItems, getItem, saveItem, deleteItem, getReviews, saveReview, deleteReview, getCategories}

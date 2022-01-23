@@ -1,30 +1,100 @@
 <template>
     <div class="q-pa-md ">
 
+      <div class="row q-mb-md">
+        <div class="col q-mr-md">
+          <q-input
+              label="Поиск по названию"
+              v-model.trim="filterName"
+          />
+        </div>
+        <div class="col q-mr-md">
+          <q-input
+              label="Поиск по категории"
+              v-model.trim="filterCategory"
+          />
+        </div>
+        <div class="col q-mr-md">
+
+          <q-range
+              class="q-mt-md"
+              v-model="filterRating"
+              color="teal"
+              :left-thumb-color="filterRating.min === 0 ? 'grey' : 'teal'"
+              :right-thumb-color="filterRating.max === 5 ? 'black' : 'teal'"
+              snap
+              :min="0"
+              :max="5"
+              :step="0.5"
+              marker-labels
+              label-always
+          >
+            <template v-slot:marker-label-group="{ markerMap }">
+              <div
+                  class="row items-center no-wrap"
+                  :class="markerMap[filterRating.min].classes"
+                  :style="markerMap[filterRating.min].style"
+              >
+                <q-icon
+                    v-if="filterRating.min === 0"
+                    size="xs"
+                    color="teal"
+                    name="star_outline"
+                />
+
+                <template v-else>
+                  <q-icon
+                      v-for="i in Math.floor(filterRating.min)"
+                      :key="i"
+                      size="xs"
+                      color="teal"
+                      name="star_rate"
+                  />
+
+                  <q-icon
+                      v-if="filterRating.min > Math.floor(filterRating.min)"
+                      size="xs"
+                      color="teal"
+                      name="star_half"
+                  />
+                </template>
+              </div>
+
+              <div
+                  class="row items-center no-wrap"
+                  :class="markerMap[filterRating.max].classes"
+                  :style="markerMap[filterRating.max].style"
+              >
+                <q-icon
+                    v-for="i in Math.floor(filterRating.max)"
+                    :key="i"
+                    size="xs"
+                    color="teal"
+                    name="star_rate"
+                />
+
+                <q-icon
+                    v-if="filterRating.max > Math.floor(filterRating.max)"
+                    size="xs"
+                    color="teal"
+                    name="star_half"
+                />
+              </div>
+            </template>
+          </q-range>
+          <q-badge color="secondary">
+            Рейтинг (от 0 до 5)
+          </q-badge>
+        </div>
+        <div class="col q-mr-md q-ml-md" v-if="userId">
+          <q-btn icon="add" @click="$router.replace(`/add/`)">Добавить</q-btn>
+        </div>
+      </div>
+
       <div class="row">
         <div class="col">
 
-          <div class="row">
-
-            <div class="col q-mr-md">
-              <q-input
-                  label="Поиск по названию"
-                  v-model.trim="filterName"
-              />
-            </div>
-            <div class="col q-mr-md">
-              <q-input
-                  label="Поиск по категории"
-                  v-model.trim="filterCategory"
-              />
-            </div>
-            <div class="col q-mr-md" v-if="userId">
-              <q-btn icon="add" @click="$router.replace(`/add/`)">Добавить</q-btn>
-            </div>
-          </div>
-
-
-          <q-list style="height: 80vh; overflow-y: scroll;">
+          <q-list style="height: 82vh; overflow-y: scroll;">
 
               <q-item v-for="(item,index) in filtredItems" :key="index">
                 <q-item-section>
@@ -50,7 +120,7 @@
         </div>
         <div class="col">
 
-          <yandex-map :settings="settings"  :coords="coords" style="width: 100%;height: 88vh;" zoom="11" v-if="coords">
+          <yandex-map :settings="settings"  :coords="coords" style="width: 100%;height: 82vh;" zoom="11" v-if="coords">
             <ymap-marker
                          :coords="coords"
                          marker-id="my"
@@ -68,8 +138,8 @@
                            :key="item.id"
                            :coords="item.coords"
                            :marker-id="item.id"
-                           :balloon-template="`<b>${item.name}</b> <br/> ${item.location}`"
-                           :hint-content="`<b>${item.name}</b> <br/> ${item.location}`"
+                           :balloon-template="`<b><a href='/item/${item.id}/'>${item.name}</a> ` + mapRating(item.rating) + `</b><br/><i>${item.category}</i><br/>${item.location}`"
+                           :hint-content="`<b>${item.name} `  + mapRating(item.rating) + `</b> <br/><i>${item.category}</i><br/> ${item.location}`"
               />
             </template>
           </yandex-map>
@@ -113,6 +183,7 @@ export default {
     let items = ref([]);
     let filterName = ref('');
     let filterCategory = ref('');
+    let filterRating = ref({min: 0, max: 5});
     let coords = ref([60,30]);
 
     const loadItems = async () => {
@@ -128,7 +199,12 @@ export default {
       return items.value.filter((item) => {
         let checkName = !filterName.value || !item.name || item.name.toLowerCase().includes(filterName.value.toLowerCase());
         let checkCategory = !filterCategory.value || !item.category || item.category.toLowerCase().includes(filterCategory.value.toLowerCase());
-        return checkName && checkCategory;
+        let checkRating = true;
+        if (filterRating.value.min > 0 || filterRating.value.max < 5) {
+          let itemRating = typeof (item.rating) !== 'undefined' ? item.rating : 0;
+          checkRating = itemRating >= filterRating.value.min && itemRating <= filterRating.value.max;
+        }
+        return checkName && checkCategory && checkRating;
       });
     })
 
@@ -165,6 +241,14 @@ export default {
       return ts ? moment(ts).format('DD.MM.YYYY HH:mm') : '';
     }
 
+    const mapRating = (rating) => {
+      let ratingHtml = '';
+      if (rating) {
+        ratingHtml = `<span style='color:orange'>${rating}</span>`
+      }
+      return ratingHtml;
+    }
+
     return {
       items,
       addPlace,
@@ -175,9 +259,11 @@ export default {
       coordsItems,
       filterName,
       filterCategory,
+      filterRating,
       filtredItems,
       selectCity,
       getDate,
+      mapRating,
     }
   },
   computed: {

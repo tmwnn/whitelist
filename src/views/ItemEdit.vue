@@ -8,11 +8,18 @@
             @reset="exitToHome"
             class="q-gutter-md"
         >
-          <q-input
-              filled
-              v-model.trim="item.category"
+
+          <q-select
               label="Категория"
+              new-value-mode="add"
+              filled
+              v-model="item.category"
+              use-input
+              input-debounce="0"
+              :options="catOptions"
+              @filter="filterCat"
           />
+
           <q-input
               filled
               v-model.trim="item.name"
@@ -39,7 +46,7 @@
         </q-form>
       </div>
       <div class="col">
-        <yandex-map :settings="settings"  :coords="item.coords" style="width: 100%;height: 88vh;" zoom="15">
+        <yandex-map :settings="settings"  :coords="item.coords" v-if="item.coords.length" style="width: 100%;height: 88vh;" zoom="15">
           <ymap-marker v-if="!!item.coords"
                        :key="item.id"
                        :coords="item.coords"
@@ -61,7 +68,7 @@ import {ref} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import store from '../store/index';
 import { yandexMap, ymapMarker,} from 'vue-yandex-maps'
-import {getItem, saveItem} from '../hooks/db';
+import {getItem, saveItem, getCategories} from '../hooks/db';
 import MD5 from "crypto-js/md5";
 import {getGeoCode, selectCity, settings} from "../hooks/ymap";
 import { useQuasar } from 'quasar'
@@ -85,10 +92,12 @@ export default {
       uid: '',
       created_at: '',
     });
+    let categories = [];
     (async () => {
       if (id.value) {
         item.value = await getItem(id.value);
       }
+      categories = await getCategories();
     })();
 
     const exitToHome = () => {
@@ -112,6 +121,15 @@ export default {
     const locate = async () => {
       item.value.coords = await getGeoCode(item.value.location);
     }
+
+    const catOptions = ref(categories);
+
+    const filterCat = (val, update) => {
+      update(() => {
+        const needle = val.toLowerCase()
+        catOptions.value = categories.filter(v => v.toLowerCase().indexOf(needle) > -1)
+      })
+    }
     /*
     if (!store.getters.userId) {
       $q.notify({message: 'Необходимо авторизоваться!', color: 'red' });
@@ -125,6 +143,9 @@ export default {
       locate,
       exitToHome,
       settings,
+      categories,
+      catOptions,
+      filterCat,
     }
   },
 }

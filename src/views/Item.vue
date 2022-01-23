@@ -7,7 +7,7 @@
         <rating :rating="+item.rating"></rating>
         <div class="text-subtitle1">{{ item.location }}</div>
 
-        <div class="text-subtitle2">{{ item.category }}</div>
+        <div class="text-subtitle2"><i>Категория: {{ item.category }}</i></div>
         <div class="text-body1">{{ item.description }}</div>
 
         <q-separator class="q-mt-md q-mb-md" />
