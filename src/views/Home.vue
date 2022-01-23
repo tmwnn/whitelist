@@ -4,16 +4,17 @@
       <div class="row q-mb-md">
         <div class="col q-mr-md">
           <q-input
-              label="Поиск по названию"
+              label="Название"
               v-model.trim="filterName"
           />
         </div>
         <div class="col q-mr-md">
           <q-input
-              label="Поиск по категории"
+              label="Категория"
               v-model.trim="filterCategory"
           />
         </div>
+
         <div class="col q-mr-md">
 
           <q-range
@@ -86,13 +87,23 @@
             Рейтинг (от 0 до 5)
           </q-badge>
         </div>
-        <div class="col q-mr-md q-ml-md" v-if="userId">
+        <div class="col q-mr-md q-ml-md desktop-only" v-if="userId">
           <q-btn icon="add" @click="$router.replace(`/add/`)">Добавить</q-btn>
         </div>
       </div>
 
       <div class="row">
         <div class="col">
+          <q-btn-group push>
+            <q-btn push label="Комбо" @click="viewType = 0" class="desktop-only"/>
+            <q-btn push label="Список" @click="viewType = 1" icon="list" />
+            <q-btn push label="Карта" @click="viewType = 2" icon="map" />
+          </q-btn-group>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col" v-if="!viewType || viewType == 1">
 
           <q-list style="height: 82vh; overflow-y: scroll;">
 
@@ -118,7 +129,7 @@
 
 
         </div>
-        <div class="col">
+        <div class="col" v-if="!viewType || viewType == 2">
 
           <yandex-map :settings="settings"  :coords="coords" style="width: 100%;height: 82vh;" zoom="11" v-if="coords">
             <ymap-marker
@@ -170,7 +181,11 @@ export default {
   components: { yandexMap, ymapMarker, Rating },
   setup() {
     const $q = useQuasar();
-
+    let defaultView = 0;
+    if( screen.width <= 760 ) {
+      defaultView = 1;
+    }
+    let viewType = ref(defaultView);
     let newPlace = ref({
       id:'',
       category: '',
@@ -264,6 +279,7 @@ export default {
       selectCity,
       getDate,
       mapRating,
+      viewType,
     }
   },
   computed: {
@@ -272,7 +288,7 @@ export default {
     },
     userEmail() {
       return this.$store.getters.userEmail;
-    }
+    },
   }
 }
 </script>

@@ -15,12 +15,13 @@
           White List
         </q-toolbar-title>
         <q-tabs align="left" shrink>
-          <q-route-tab :to="{ name: 'home'}"  label="Главная" />
+          <q-route-tab :to="{ name: 'home'}"  label="Список" />
+          <q-route-tab :to="{ name: 'item_add'}"  label="Добавить" />
         </q-tabs>
         <div>
           <!--Quasar v{{ $q.version }}-->
           <template v-if="userId">
-            {{ userName }}
+            <span class="desktop-only">{{ userName }}</span>
             <q-btn @click="logout" title="Выйти">
               <q-icon name="logout"/>
             </q-btn>
