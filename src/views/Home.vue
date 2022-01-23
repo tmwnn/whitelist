@@ -88,7 +88,7 @@
           </q-badge>
         </div>
         <div class="col q-mr-md q-ml-md desktop-only" v-if="userId">
-          <q-btn icon="add" @click="$router.replace(`/add/`)">Добавить</q-btn>
+          <q-btn push color="primary" title="Добавить" round icon="add" @click="$router.replace(`/add/`)" />
         </div>
       </div>
 
