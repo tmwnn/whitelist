@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <div class="row">
-      <div class="col q-pa-md">
+      <div class="col q-pa-md" v-show="!showMap">
 
         <q-form
             @submit="save"
@@ -47,12 +47,18 @@
           <div>
             <q-btn label="Сохранить" type="submit" color="primary"/>
             <q-btn label="Отмена" type="reset" color="primary" flat class="q-ml-sm"/>
-            <q-btn label="Показать на карте" type="button" @click="locate()" flat сlass="q-ml-sm"/>
+            <q-btn label="Показать на карте" type="button" @click="locate()" flat class="q-ml-sm desktop-only"/>
+            <q-btn label="Показать на карте" type="button" @click="locate(); showMap = 1;" flat class="q-ma-md mobile-only"/>
           </div>
         </q-form>
       </div>
-      <div class="col">
-        <yandex-map :settings="settings"  :coords="item.coords" v-if="item.coords.length" style="width: 100%;height: 88vh;" zoom="15">
+      <div class="col" :class="{'desktop-only': !showMap}">
+        <q-btn @click="showMap = 0" icon="arrow_back" v-if="showMap" class="q-mb-md">К описанию</q-btn>
+        <yandex-map :settings="settings"
+                    :coords="item.coords"
+                    :style="'width: 100%;height: ' + (showMap ? '78' : '88' )+ 'vh;'"
+                    zoom="15"
+        >
           <ymap-marker v-if="!!item.coords"
                        :key="item.id"
                        :coords="item.coords"
@@ -88,6 +94,7 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const id = ref(route.params.id);
+    const showMap = ref(0);
     let item = ref({
       id:'',
       category: '',
@@ -154,6 +161,7 @@ export default {
       categories,
       catOptions,
       filterCat,
+      showMap,
     }
   },
 }

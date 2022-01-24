@@ -92,9 +92,9 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row q-mb-sm">
         <div class="col">
-          <q-btn-group push>
+          <q-btn-group push >
             <q-btn push label="Комбо" @click="viewType = 0" class="desktop-only"/>
             <q-btn push label="Список" @click="viewType = 1" icon="list" />
             <q-btn push label="Карта" @click="viewType = 2" icon="map" />
@@ -105,7 +105,7 @@
       <div class="row">
         <div class="col" v-if="!viewType || viewType == 1">
 
-          <q-list style="height: 82vh; overflow-y: scroll;">
+          <q-list style="height: 76vh; overflow-y: scroll;">
 
               <q-item v-for="(item,index) in filtredItems" :key="index">
                 <q-item-section>
@@ -123,7 +123,7 @@
                   <rating :rating="+item.rating"></rating>
                   <q-item-label v-if="userId && item.uid === userEmail">
                     <q-btn icon="edit" size="xs"  @click="$router.replace(`/edit/${item.id}/`)"></q-btn>
-                    <q-btn icon="delete" size="xs" @click="delPlace(item.id)"></q-btn>
+                    <q-btn icon="delete" size="xs" @click="delPlace(item.id)" class="q-ml-sm"></q-btn>
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -134,7 +134,12 @@
         </div>
         <div class="col" v-if="!viewType || viewType == 2">
 
-          <yandex-map :settings="settings"  :coords="coords" style="width: 100%;height: 82vh;" zoom="11" v-if="coords">
+          <yandex-map :settings="settings"
+                      :coords="coords"
+                      :style="'width: 100%;height: ' + (isMobile ? '66' : '76') + 'vh;'"
+                      zoom="11"
+                      v-if="coords"
+          >
             <ymap-marker
                          :coords="coords"
                          marker-id="my"
@@ -147,7 +152,7 @@
                          marker-type="placemark"
                          hint-content="Ваше местоположение"
             />
-            <template v-for="item in filtredItems" :key="item.id" >
+            <template v-for="item in filtredItems" >
               <ymap-marker v-if="!!item.coords"
                            :key="item.id"
                            :coords="item.coords"
@@ -184,8 +189,10 @@ export default {
   setup() {
     const $q = useQuasar();
     let defaultView = 0;
+    let isMobile = 0;
     if( screen.width <= 760 ) {
       defaultView = 1;
+      isMobile = 1;
     }
     let viewType = ref(defaultView);
     let items = ref([]);
@@ -258,6 +265,7 @@ export default {
       getDate,
       mapRating,
       viewType,
+      isMobile,
     }
   },
   computed: {

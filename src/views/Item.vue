@@ -1,11 +1,14 @@
 <template>
   <div class="q-pa-md">
     <div class="row">
-      <div class="col q-pa-md" style="height: 88vh; overflow-y: scroll;">
+      <div class="col q-pa-md" style="height: 88vh; overflow-y: scroll;" v-show="!showMap">
         <q-btn @click="exitToHome" icon="arrow_back">Вернуться к списку</q-btn>
-        <h3>{{ item.name }}</h3>
+        <div class="text-h4 q-mt-md">{{ item.name }}</div>
         <rating :rating="+item.rating"></rating>
-        <div class="text-subtitle1">{{ item.location }}</div>
+
+        <div class="text-subtitle1 desktop-only">{{ item.location }}</div>
+        <div class="text-subtitle1 mobile-only"><a href="#" @click="showMap = 1;">{{ item.location }}</a></div>
+
         <div class="text-subtitle1" v-if="item.url">
           <a :href="item.url" target="_blank" >{{ item.url }}</a>
         </div>
@@ -66,8 +69,13 @@
         </q-list>
 
       </div>
-      <div class="col">
-        <yandex-map :settings="settings"  :coords="item.coords" style="width: 100%;height: 88vh;" zoom="15">
+      <div class="col" :class="{'desktop-only': !showMap}">
+        <q-btn @click="showMap = 0" icon="arrow_back" v-if="showMap" class="q-mb-md">К описанию</q-btn>
+        <yandex-map :settings="settings"
+                    :coords="item.coords"
+                    :style="'width: 100%;height: ' + (showMap ? '78' : '88' )+ 'vh;'"
+                    zoom="15"
+        >
           <ymap-marker v-if="!!item.coords"
                        :key="item.id"
                        :coords="item.coords"
@@ -105,6 +113,7 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const id = ref(route.params.id);
+    const showMap = ref(0);
     let item = ref({
       id:'',
       category: '',
@@ -152,6 +161,7 @@ export default {
       reviews.value = await getReviews(item.value.id);
       item.value = await getItem(item.value.id);
       $q.notify({message: 'Отзыв добавлен', color: 'green' });
+      clearRev();
     }
 
     const delRev = async (reviewId) => {
@@ -187,6 +197,7 @@ export default {
       exitToHome,
       settings,
       getDate,
+      showMap,
     }
   },
   computed: {
