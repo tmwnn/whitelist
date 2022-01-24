@@ -39,6 +39,10 @@
               <q-icon :name="newReview.rating > 3 ? 'star' : 'star_border'" @click="newReview.rating = 4"/>
               <q-icon :name="newReview.rating > 4 ? 'star' : 'star_border'" @click="newReview.rating = 5"/>
             </span>
+
+            <q-btn @click="newReview.rating -= (newReview.rating >= 0 ? 1 : 0);" push round size="xs" class="q-ml-md" icon="remove" />
+            <q-btn @click="newReview.rating += (newReview.rating <= 5 ? 1 : 0);" push round size="xs" class="q-ml-md" icon="add" />
+
           </div>
 
           <div>
