@@ -137,7 +137,7 @@
           <yandex-map :settings="settings"
                       :coords="coords"
                       :style="'width: 100%;height: ' + (isMobile ? '66' : '76') + 'vh;'"
-                      zoom="11"
+                      zoom="15"
                       v-if="coords"
           >
             <ymap-marker
