@@ -9,9 +9,19 @@
           />
         </div>
         <div class="col q-mr-md">
+          <!--
           <q-input
               label="Категория"
               v-model.trim="filterCategory"
+          />
+          -->
+          <q-select
+              label="Категория"
+              v-model="filterCategory"
+              use-input
+              input-debounce="0"
+              :options="catOptions"
+              @filter="filterCat"
           />
         </div>
 
@@ -179,7 +189,7 @@ import { useQuasar } from 'quasar'
 import store from '../store/index';
 import { yandexMap, ymapMarker,} from 'vue-yandex-maps'
 import {settings, selectCity, getGeoLocation} from "../hooks/ymap";
-import {getItems, deleteItem} from '../hooks/db';
+import {getItems, deleteItem, getCategories} from '../hooks/db';
 import Rating from "../components/Rating";
 import moment from 'moment';
 
@@ -197,6 +207,7 @@ export default {
     }
     let viewType = ref(defaultView);
     let items = ref([]);
+    let categories = [];
     let filterName = ref('');
     let filterCategory = ref('');
     let filterRating = ref({min: 0, max: 5});
@@ -208,6 +219,7 @@ export default {
     }
     (async () => {
       await loadItems();
+      categories = await getCategories();
       coords.value = await getGeoLocation();
     })();
 
@@ -265,6 +277,15 @@ export default {
       mapBounds.value = typeof map.originalEvent.newBounds != 'undefined' ? map.originalEvent.newBounds : [];
     }
 
+    const catOptions = ref(categories);
+
+    const filterCat = (val, update) => {
+      update(() => {
+        const needle = val.toLowerCase()
+        catOptions.value = categories.filter(v => v.toLowerCase().indexOf(needle) > -1)
+      })
+    }
+
     return {
       items,
       delPlace,
@@ -282,6 +303,9 @@ export default {
       isMobile,
       mapBounds,
       boundsChange,
+      categories,
+      catOptions,
+      filterCat,
     }
   },
   computed: {

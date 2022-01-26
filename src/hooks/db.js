@@ -73,7 +73,7 @@ const deleteReview = async (id) => {
 const getCategories = async (onlyExitst) => {
     let categories = [];
     if (!onlyExitst) {
-        categories = ['Кафе/бар', 'Автосервис', 'Стоматология', 'Ветклиника'];
+        categories = ['', 'Кафе/бар', 'Автосервис', 'Стоматология', 'Ветклиника'];
     }
     let items = await getItems();
     items.forEach((item) => {
