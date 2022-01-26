@@ -139,6 +139,7 @@
                       :style="'width: 100%;height: ' + (isMobile ? '66' : '76') + 'vh;'"
                       zoom="15"
                       v-if="coords"
+                      @boundschange="boundsChange"
           >
             <ymap-marker
                          :coords="coords"
@@ -200,6 +201,7 @@ export default {
     let filterCategory = ref('');
     let filterRating = ref({min: 0, max: 5});
     let coords = ref([60,30]);
+    let mapBounds = ref([]);
 
     const loadItems = async () => {
       items.value = await getItems();
@@ -218,7 +220,16 @@ export default {
           let itemRating = typeof (item.rating) !== 'undefined' ? item.rating : 0;
           checkRating = itemRating >= filterRating.value.min && itemRating <= filterRating.value.max;
         }
-        return checkName && checkCategory && checkRating;
+        let checkBounds = true;
+        if (mapBounds.value.length) {
+          if (item.coords[0] < mapBounds.value[0][0] || item.coords[0] > mapBounds.value[1][0]) {
+            checkBounds = false;
+          }
+          if (item.coords[1] < mapBounds.value[0][1] || item.coords[1] > mapBounds.value[1][1]) {
+            checkBounds = false;
+          }
+        }
+        return checkName && checkCategory && checkRating && checkBounds;
       });
     })
 
@@ -250,6 +261,9 @@ export default {
       }
       return ratingHtml;
     }
+    const boundsChange = (map) => {
+      mapBounds.value = typeof map.originalEvent.newBounds != 'undefined' ? map.originalEvent.newBounds : [];
+    }
 
     return {
       items,
@@ -266,6 +280,8 @@ export default {
       mapRating,
       viewType,
       isMobile,
+      mapBounds,
+      boundsChange,
     }
   },
   computed: {
