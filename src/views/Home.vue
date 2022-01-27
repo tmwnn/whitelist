@@ -148,7 +148,7 @@
                       :coords="coords"
                       :style="'width: 100%;height: ' + (isMobile ? '66' : '76') + 'vh;'"
                       zoom="15"
-                      v-if="coords"
+                      v-if="coords.length"
                       @boundschange="boundsChange"
           >
             <ymap-marker
@@ -202,7 +202,7 @@ export default {
     let defaultView = 0;
     let isMobile = 0;
     if( screen.width <= 760 ) {
-      defaultView = 1;
+      defaultView = 2;
       isMobile = 1;
     }
     let viewType = ref(defaultView);
@@ -211,7 +211,7 @@ export default {
     let filterName = ref('');
     let filterCategory = ref('');
     let filterRating = ref({min: 0, max: 5});
-    let coords = ref([60,30]);
+    let coords = ref([]);
     let mapBounds = ref([]);
 
     const loadItems = async () => {
