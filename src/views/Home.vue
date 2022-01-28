@@ -148,7 +148,7 @@
                       :coords="coords"
                       :style="'width: 100%;height: ' + (isMobile ? '66' : '76') + 'vh;'"
                       zoom="15"
-                      v-if="coords.length"
+                      v-show="coords.length"
                       @boundschange="boundsChange"
           >
             <ymap-marker
