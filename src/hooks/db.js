@@ -9,6 +9,7 @@ const getItems = async () => {
     items.forEach((row) => {
         result.push(row.data());
     });
+    result.sort((a, b) => +b.rating - +a.rating);
     return result;
 }
 
